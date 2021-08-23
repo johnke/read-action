@@ -19,6 +19,7 @@ def get_parsed_page(url):
   a parsed lxml format that is easy to query.
   """
   response = requests.get(url, headers={"User-Agent": "Only slightly defined"})
+  print("RESPONSE:", response.text)
   parsed_page = BeautifulSoup(response.text, 'html.parser')
   return parsed_page
 
