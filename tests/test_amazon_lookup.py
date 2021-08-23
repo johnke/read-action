@@ -20,7 +20,8 @@ class MockTest(unittest.TestCase):
     test_url = "http://foo_bar"
     bs_mock = amazon_lookup.get_parsed_page(test_url)
     parsed_mock = amazon_lookup.parse_parsed_page(bs_mock, test_url, "2021-08-23", 5)
-    output_format = amazon_lookup.format_book(parsed_mock)
+    output_format = amazon_lookup.format_book(parsed_mock, "test body")
+    output_format_empty_body = amazon_lookup.format_book(parsed_mock)
 
   def test_200_response(self):
     with HTTMock(response_content):
@@ -31,7 +32,7 @@ class MockTest(unittest.TestCase):
     self.assertIn("Neil Gaiman", str(self.bs_mock))
 
   def test_parsed_page(self):
-    self.assertEqual(self.parsed_mock, {'url': 'http://foo_bar', 'title': 'The Sandman Volume 1: 30th Anniversary Edition: Preludes and Nocturnes', 'author': 'Neil Gaiman', 'image': 'https://images-na.ssl-images-amazon.com/images/I/51bpOmzgv5L._SX321_BO1,204,203,200_.jpg', 'date': '2021-08-23', 'rating_string': '  rating: "★★★★★"'})
+    self.assertEqual(self.parsed_mock, {'url': 'http://foo_bar', 'body': '', 'title': 'The Sandman Volume 1: 30th Anniversary Edition: Preludes and Nocturnes', 'author': 'Neil Gaiman', 'image': 'https://images-na.ssl-images-amazon.com/images/I/51bpOmzgv5L._SX321_BO1,204,203,200_.jpg', 'date': '2021-08-23', 'rating_string': '  rating: "★★★★★"'})
 
   def test_output_format(self):
     f = """---
@@ -44,5 +45,23 @@ extra:
   rating: "★★★★★"
 
 ---
+
+test body
 """
     self.assertEqual(self.output_format, f)
+
+  def test_output_format_empty_body(self):
+    f = """---
+date: "2021-08-23"
+title: "The Sandman Volume 1: 30th Anniversary Edition: Preludes and Nocturnes"
+extra:
+  author: "Neil Gaiman"
+  image: "https://images-na.ssl-images-amazon.com/images/I/51bpOmzgv5L._SX321_BO1,204,203,200_.jpg"
+  link: "http://foo_bar"
+  rating: "★★★★★"
+
+---
+
+
+"""
+    self.assertEqual(self.output_format_empty_body, f)
