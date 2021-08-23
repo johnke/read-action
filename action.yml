@@ -2,9 +2,12 @@ name: amazon-lookup
 description: Looks up books information given an issue with an amazon URL.
 
 inputs:
-  read_directory:
-    description: The directory where you want to save your outputted markdown files.
-    default: content/reading
+  url:
+    description: the amazon URL you want to look up
+    required: true
+  content:
+    description: what you want to say about this book
+    required: false
 
 outputs:
   book_title:
@@ -16,7 +19,8 @@ runs:
   using: "docker"
   image: "Dockerfile"
   args:
-  - ${{ inputs.who-to-greet }}
+  - ${{ inputs.url }}
+  - ${{ inputs.content}}
 
 branding:
   icon: "award"
