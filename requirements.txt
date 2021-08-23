@@ -1,0 +1,5 @@
+beautifulsoup4==4.9.3
+requests==2.25.0
+python-slugify==4.0.1
+lxml==4.6.2
+httmock==1.4.0
