@@ -1,4 +1,4 @@
-name: Read
+name: amazon-lookup
 description: Looks up books information given an issue with an amazon URL.
 
 inputs:
