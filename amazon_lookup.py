@@ -87,3 +87,5 @@ if __name__ == "__main__":
   parsed_page = get_parsed_page(url)
   book = parse_parsed_page(parsed_page, url, book_date, book_rating)
   write_file(book)
+  print("::set-output name=book_title::{}".format(book['title']))
+  print("::set-output name=book_date::{}".format(book['date']))

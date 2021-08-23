@@ -8,7 +8,7 @@ Create an issue with the book's amazon link. The action fetches the product's da
 
 Create .github/workflows/read.yml file using the following template:
 
-on:
+```on:
   issues:
     types: opened
 
@@ -34,12 +34,12 @@ jobs:
         with:
           issue-number: "${{ env.IssueNumber }}"
           comment: "📚 You read ${{ env.BookTitle }} on ${{env.DateRead}}."
+```
 
 ## Options
 
     readFileName: The file where you want to save your books. Default: _data/read.yml.
     providers: Specify the ISBN providers that you want to use, in the order you need them to be invoked. If setting more than one provider, separate each with a comma.
-
 
 # Creating an issue
 

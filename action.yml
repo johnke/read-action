@@ -6,6 +6,11 @@ inputs:
     description: The directory where you want to save your outputted markdown files.
     default: content/reading
 
+outputs:
+  book_title:
+    description: 'The name of the book'
+  book_date:
+    description: 'The date you read the book'
 
 runs:
   using: "docker"
