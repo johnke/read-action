@@ -42,7 +42,7 @@ def parse_parsed_page(parsed_page, url, book_date, book_rating):
   return book
 
 
-def format_book(book, body=None):
+def format_book(book, body):
   if body is None:
     book['body'] = ""
   else:
@@ -63,11 +63,13 @@ extra:
   return formatted_book
 
 
-def write_file(book):
-  formatted_book = format_book(book)
+def write_file(book, body=None):
+  formatted_book = format_book(book, body)
   slugified_title = slugify(book['title'])
   slugified_author = slugify(book['author'])
-  book_filename = os.path.join(scriptdir, "test-{}-{}.md".format(slugified_title, slugified_author))
+  # book_filename = os.path.join(scriptdir, "test-{}-{}.md".format(slugified_title, slugified_author))
+  book_filename = os.path.join(
+      "/github/workspace/content/reading", "test-{}-{}.md".format(slugified_title, slugified_author))
 
   f = open(book_filename, 'w')
   f.write(formatted_book)
@@ -76,18 +78,18 @@ def write_file(book):
 
 if __name__ == "__main__":
   if "GITHUB_ACTIONS" in os.environ:
-    if "AMAZON_LOOKUP_ISSUE_TITLE" in os.environ:
-      title_split = os.environ.get("AMAZON_LOOKUP_ISSUE_TITLE").split()
-      url = title_split[0]
-      if len(title_split) >= 2:
-        book_rating = int(title_split[1])
-      if len(title_split) == 3:
-        book_date = title_split[2]
-      else:
-        book_date = str(datetime.date.today())
+    title_split = sys.argv[1].split()
+    url = title_split[0]
+    print("URL", url)
+    if len(title_split) >= 2:
+      book_rating = int(title_split[1])
+    if len(title_split) == 3:
+      book_date = title_split[2]
+    else:
+      book_date = str(datetime.date.today())
 
-    if "AMAZON_LOOKUP_ISSUE_BODY" in os.environ:
-      book_body = os.environ.get("AMAZON_LOOKUP_ISSUE_BODY")
+    if len(sys.argv) == 3:
+      book_body = sys.argv[2]
 
   else:
     book_body = None

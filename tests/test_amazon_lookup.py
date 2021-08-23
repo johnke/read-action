@@ -21,7 +21,7 @@ class MockTest(unittest.TestCase):
     bs_mock = amazon_lookup.get_parsed_page(test_url)
     parsed_mock = amazon_lookup.parse_parsed_page(bs_mock, test_url, "2021-08-23", 5)
     output_format = amazon_lookup.format_book(parsed_mock, "test body")
-    output_format_empty_body = amazon_lookup.format_book(parsed_mock)
+    output_format_empty_body = amazon_lookup.format_book(parsed_mock, None)
 
   def test_200_response(self):
     with HTTMock(response_content):
