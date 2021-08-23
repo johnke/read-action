@@ -1,9 +1,9 @@
-name: amazon-lookup
-description: Looks up books information given an issue with an amazon URL.
+name: isbn-lookup
+description: Looks up books information given an issue with an ISBN.
 
 inputs:
-  url:
-    description: the amazon URL you want to look up
+  isbn:
+    description: the isbn you want to look up
     required: true
   content:
     description: what you want to say about this book
