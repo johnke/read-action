@@ -5,54 +5,33 @@ import requests
 import json
 import sys
 import datetime
-from lxml import html
 from slugify import slugify
-from bs4 import BeautifulSoup
+import isbnlib
 
 
 scriptdir = os.path.dirname(__file__)
 
 
-def get_parsed_page(url):
-  """
-  Return the content of the website on the given url in
-  a parsed lxml format that is easy to query.
-  """
-  response = requests.get(url, headers={"User-Agent": "Only slightly defined"})
-  print("RESPONSE:", response.text)
-  parsed_page = BeautifulSoup(response.text, 'html.parser')
-  return parsed_page
-
-
-def parse_parsed_page(parsed_page, url, book_date, book_rating):
-  book = {}
-  book['url'] = url
-  book['title'] = parsed_page.find(id="productTitle").text.strip()
-  book['author'] = parsed_page.find(class_="author notFaded").span.text.split("\n")[0]
-  if book['author'] == "":
-    book['author'] = parsed_page.find(class_="author notFaded").a.text
-
-  images = json.loads(parsed_page.find(
-    "img", class_="frontImage")['data-a-dynamic-image'])
-  book['image'] = list(images.keys())[0]
-  book['date'] = book_date
-  if book_rating:
-    book['rating_string'] = "  rating: \"{}\"".format("★" * book_rating)
-  else:
-    book['rating_string'] = ""
-  return book
-
-
-def format_book(book, body):
+def lookup_isbn(isbn, rating_string, date, body):
+  book_info = isbnlib.meta(isbn, service="goob")
+  book_info['url'] = "https://www.amazon.co.uk/dp/" + isbn
+  book_info['image'] = isbnlib.cover(isbn)['thumbnail']
+  book_info['rating_string'] = rating_string
+  book_info['authors'] = ", ".join(book_info['Authors'])
+  book_info['date'] = date
   if body is None:
-    book['body'] = ""
+    book_info['body'] = ''
   else:
-    book['body'] = body
+    book_info['body'] = body
+  return book_info
+
+
+def format_book(book):
   formatted_book = """---
 date: "{date}"
-title: "{title}"
+title: "{Title}"
 extra:
-  author: "{author}"
+  author: "{authors}"
   image: "{image}"
   link: "{url}"
 {rating_string}
@@ -64,10 +43,10 @@ extra:
   return formatted_book
 
 
-def write_file(book, body=None):
-  formatted_book = format_book(book, body)
-  slugified_title = slugify(book['title'])
-  slugified_author = slugify(book['author'])
+def write_file(book):
+  formatted_book = format_book(book)
+  slugified_title = slugify(book['Title'])
+  slugified_author = slugify(book['authors'])
   # book_filename = os.path.join(scriptdir, "test-{}-{}.md".format(slugified_title, slugified_author))
   book_filename = os.path.join(
       "/github/workspace/content/reading", "test-{}-{}.md".format(slugified_title, slugified_author))
@@ -80,10 +59,12 @@ def write_file(book, body=None):
 if __name__ == "__main__":
   if "GITHUB_ACTIONS" in os.environ:
     title_split = sys.argv[1].split()
-    url = title_split[0]
-    print("URL", url)
+    isbn = title_split[0]
+
     if len(title_split) >= 2:
-      book_rating = int(title_split[1])
+      rating_string = "  rating: \"{}\"".format("★" * int(title_split[1]))
+    else:
+      rating_string = ""
     if len(title_split) == 3:
       book_date = title_split[2]
     else:
@@ -95,10 +76,10 @@ if __name__ == "__main__":
   else:
     book_body = None
     if len(sys.argv) == 1:
-      print("You need to give me a URL to parse")
+      print("You need to give me an ISBN to parse")
       sys.exit(1)
     else:
-      url = sys.argv[1]
+      isbn = sys.argv[1]
 
     book_rating = None
     if len(sys.argv) == 3:
@@ -109,8 +90,7 @@ if __name__ == "__main__":
     else:
       book_date = str(datetime.date.today())
 
-  parsed_page = get_parsed_page(url)
-  book = parse_parsed_page(parsed_page, url, book_date, book_rating)
-  write_file(book, book_body)
+  book_info = lookup_isbn(isbn, rating_string, book_date, book_body)
+  write_file(book_info)
   print("::set-output name=book_title::{}".format(book['title']))
   print("::set-output name=book_date::{}".format(book['date']))
