@@ -2,7 +2,7 @@ name: Read
 description: Looks up books information given an issue with an amazon URL.
 
 inputs:
-  readFileName:
+  read_directory:
     description: The directory where you want to save your outputted markdown files.
     default: content/reading
 
