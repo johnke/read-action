@@ -92,5 +92,5 @@ if __name__ == "__main__":
 
   book_info = lookup_isbn(isbn, rating_string, book_date, book_body)
   write_file(book_info)
-  print("::set-output name=book_title::{}".format(book['title']))
-  print("::set-output name=book_date::{}".format(book['date']))
+  print("::set-output name=book_title::{}".format(book_info['Title']))
+  print("::set-output name=book_date::{}".format(book_info['date']))
