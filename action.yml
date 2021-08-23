@@ -19,7 +19,7 @@ runs:
   using: "docker"
   image: "Dockerfile"
   args:
-  - ${{ inputs.url }}
+  - ${{ inputs.isbn }}
   - ${{ inputs.content}}
 
 branding:
