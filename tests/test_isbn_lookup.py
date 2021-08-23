@@ -1,17 +1,7 @@
 import unittest
 import os
 from httmock import all_requests, HTTMock
-import requests
-import amazon_lookup
-
-
-@all_requests
-def response_content(url, request):
-  current_dir = os.path.abspath(os.path.dirname(__file__))
-  mock_filename = os.path.join(current_dir, 'mock_response.html')
-  with open(mock_filename, "rb") as f:
-    content = f.read().decode("utf-8")
-  return {'status_code': 200, 'content': content}
+import isbn_lookup
 
 
 class MockTest(unittest.TestCase):
